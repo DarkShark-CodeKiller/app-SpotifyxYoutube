@@ -67,14 +67,14 @@ if analysis_mode == "YouTube Overview":
 
     # --- 2. Official vs Unofficial Comparison ---
     st.subheader("Official vs Unofficial: Average Views, Likes, and Comments")
-    avg_metrics = filtered_df.groupby('official_video')[['Views', 'Likes', 'Comments']].mean().reset_index()
+    avg_metrics = filtered_df.groupby('official_video')[['Views']].mean().reset_index()
     avg_metrics['official_video'] = avg_metrics['official_video'].map({True: 'Official', False: 'Unofficial'})
     fig, ax = plt.subplots(figsize=(7, 4))
     avg_metrics.plot(x='official_video', kind='bar', ax=ax, rot=0, color=['skyblue', 'lightcoral', 'lightgreen'])
     ax.set_ylabel("Average Count")
-    ax.set_title("Average Engagement by Video Type")
+    ax.set_title("Views")
     st.pyplot(fig)
-    st.markdown("**Observation:** Officially released videos tend to achieve higher views and likes, showing the importance of official branding and channel authority.")
+    st.markdown("**Observation:** Officially released videos tend to achieve higher views, showing the importance of official branding and channel authority.")
 
     # --- 3. Top vs Bottom Performing Songs (Feature-selectable) ---
     st.subheader("Top vs Bottom Performing Songs (YouTube Views)")

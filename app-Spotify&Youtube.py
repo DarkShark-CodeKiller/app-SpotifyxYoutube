@@ -64,7 +64,6 @@ if analysis_mode == "YouTube Overview":
     ax.set_title("Top 10 Channels by Views")
     st.pyplot(fig)
     
-
     # --- 2. Official vs Unofficial Comparison ---
     st.subheader("Official vs Unofficial: Average Views")
     avg_metrics = filtered_df.groupby('official_video')[['Views']].mean().reset_index()
@@ -91,40 +90,6 @@ if analysis_mode == "YouTube Overview":
     ax.set_title(f"{selected_feature} Distribution: Top vs Bottom YouTube Songs")
     st.pyplot(fig)
     st.markdown(f"**Observation:** Top-viewed songs show distinct patterns in *{selected_feature}*, suggesting it contributes to audience engagement on YouTube.")
-
-
-    # --- 4. Audience Engagement Rate by Channel ---
-    st.subheader("Audience Engagement Rate by Channel")
-    df['Engagement_Rate'] = (df['Likes'] + df['Comments']) / df['Views']
-    engagement = df.groupby('Channel')['Engagement_Rate'].mean().sort_values(ascending=False).head(10)
-
-    fig, ax = plt.subplots(figsize=(8, 4))
-    sns.barplot(x=engagement.values, y=engagement.index, palette="coolwarm", ax=ax)
-    ax.set_xlabel("Average Engagement Rate (Likes + Comments per View)")
-    ax.set_ylabel("Channel")
-    ax.set_title("Top 10 Channels by Engagement Rate")
-    st.pyplot(fig)
-    st.markdown(
-        "**Observation:** Channels with high engagement rates tend to maintain strong audience loyalty, "
-        "even when their total view counts are lower, showing that smaller fan communities can have strong influence potential."
-    )
-
-    # --- 5. Engagement Rate vs Spotify Features ---
-    st.subheader("Engagement Rate vs Spotify Features")
-
-    fig, ax = plt.subplots(figsize=(8, 5))
-    sns.scatterplot(data=df, x=selected_feature, y='Engagement_Rate', alpha=0.6, color='teal')
-    sns.regplot(data=df, x=selected_feature, y='Engagement_Rate', scatter=False, color='red', ax=ax)
-    ax.set_title(f"Engagement Rate vs {selected_feature}")
-    ax.set_xlabel(selected_feature)
-    ax.set_ylabel("Engagement Rate (Likes + Comments per View)")
-    st.pyplot(fig)
-    st.markdown(
-        f"**Observation:** Songs with higher *{selected_feature}* tend to show distinctive engagement patterns, "
-        "suggesting that musical characteristics influence how audiences interact beyond just viewing."
-    )
-
-
 
 #SPOTIFY OVERVIEW
 elif analysis_mode == "Spotify Overview":
@@ -179,8 +144,17 @@ elif analysis_mode == "Cross-Platform Analysis":
     st.pyplot(fig)
     st.markdown("**Observation:** Songs with high Spotify streams generally achieve higher YouTube views, suggesting cross-platform popularity alignment.")
 
+    # --- 2. Cross-Platform Divergence (Top vs Bottom Differences) ---
+    st.subheader("Cross-Platform Divergence: Which Songs Perform Differently?")
+    df['Stream_Rank'] = df['Stream'].rank(pct=True)
+    df['View_Rank'] = df['Views'].rank(pct=True)
+    df['Performance_Gap'] = abs(df['Stream_Rank'] - df['View_Rank'])
+    top_gap = df.nlargest(10, 'Performance_Gap')[['Artist', 'Track', 'Stream_Rank', 'View_Rank', 'Performance_Gap']]
 
-    # --- 2. Feature Influence Comparison ---
+    st.dataframe(top_gap.style.highlight_max(subset=['Performance_Gap'], color='lightcoral'))
+    st.markdown("**Observation:** Some songs perform far better on one platform than the other, showing differing audience behaviors between streaming and video consumption.")
+
+    # --- 3. Feature Influence Comparison ---
     st.subheader("Feature Influence Comparison: Streams vs Views")
 
     features = ['Energy', 'Danceability', 'Acousticness', 'Valence', 'Loudness']
@@ -207,15 +181,4 @@ elif analysis_mode == "Cross-Platform Analysis":
     However, Acousticness tends to correlate negatively, suggesting that lively, electronic-driven songs perform better across platforms.  
     """)
 
-
-    # --- 3. Cross-Platform Divergence (Top vs Bottom Differences) ---
-    st.subheader("Cross-Platform Divergence: Which Songs Perform Differently?")
-    df['Stream_Rank'] = df['Stream'].rank(pct=True)
-    df['View_Rank'] = df['Views'].rank(pct=True)
-    df['Performance_Gap'] = abs(df['Stream_Rank'] - df['View_Rank'])
-    top_gap = df.nlargest(10, 'Performance_Gap')[['Artist', 'Track', 'Stream_Rank', 'View_Rank', 'Performance_Gap']]
-
-    st.dataframe(top_gap.style.highlight_max(subset=['Performance_Gap'], color='lightcoral'))
-    st.markdown("**Observation:** Some songs perform far better on one platform than the other, showing differing audience behaviors between streaming and video consumption.")
-    
 

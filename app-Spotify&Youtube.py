@@ -66,13 +66,12 @@ if analysis_mode == "YouTube Overview":
     
 
     # --- 2. Official vs Unofficial Comparison ---
-    st.subheader("Official vs Unofficial: Average Views, Likes, and Comments")
+    st.subheader("Official vs Unofficial: Average Views")
     avg_metrics = filtered_df.groupby('official_video')[['Views']].mean().reset_index()
     avg_metrics['official_video'] = avg_metrics['official_video'].map({True: 'Official', False: 'Unofficial'})
     fig, ax = plt.subplots(figsize=(7, 4))
-    avg_metrics.plot(x='official_video', kind='bar', ax=ax, rot=0, color=['skyblue', 'lightcoral', 'lightgreen'])
-    ax.set_ylabel("Average Count")
-    ax.set_title("Views")
+    avg_metrics.plot(x='Type_video', kind='bar', ax=ax, rot=0)
+    ax.set_ylabel("Average views")
     st.pyplot(fig)
     st.markdown("**Observation:** Officially released videos tend to achieve higher views, showing the importance of official branding and channel authority.")
 
